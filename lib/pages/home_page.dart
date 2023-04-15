@@ -17,22 +17,22 @@ class _HomePageState extends State<HomePage> {
   List data = [
     {
       "id": 1,
-      "latitude": 0,
-      "longitude": 0,
+      "latitude": -16.402908,
+      "longitude": -71.553949,
       "title": "Comisaria",
       "image": "https://cdn-icons-png.flaticon.com/512/3882/3882851.png",
     },
     {
       "id": 2,
-      "latitude": 0,
-      "longitude": 0,
+      "latitude": -16.403330,
+      "longitude": -71.550391,
       "title": "Bomberos",
       "image": "https://cdn-icons-png.flaticon.com/512/921/921079.png",
     },
     {
       "id": 3,
-      "latitude": 0,
-      "longitude": 0,
+      "latitude": -16.405200,
+      "longitude": -71.551901,
       "title": "Hospital",
       "image":
           "https://www.shareicon.net/data/512x512/2016/07/10/119238_hospital_512x512.png",
@@ -49,6 +49,26 @@ class _HomePageState extends State<HomePage> {
       position: LatLng(-16.404640, -71.552101),
     ),
   };
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() {
+    data.forEach((element) {
+      getImageMarkerBytes(element["image"], fromInternet: true).then((value) {
+        Marker marker = Marker(
+          markerId: MarkerId(myMarkers.length.toString()),
+          position: LatLng(element["latitude"], element["longitude"]),
+          icon: BitmapDescriptor.fromBytes(value),
+        );
+        myMarkers.add(marker);
+        setState(() {});
+      });
+    });
+  }
 
   Future<Uint8List> getImageMarkerBytes(String path,
       {bool fromInternet = false, int width = 100}) async {
