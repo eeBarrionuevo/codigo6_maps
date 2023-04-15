@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pe.aurorastudio.codigo6_maps">
+   
+   
+   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+   
+   
    <application
         android:label="codigo6_maps"
         android:name="${applicationName}"
