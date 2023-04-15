@@ -14,6 +14,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List data = [
+    {
+      "id": 1,
+      "latitude": 0,
+      "longitude": 0,
+      "title": "Comisaria",
+      "image": "https://cdn-icons-png.flaticon.com/512/3882/3882851.png",
+    },
+    {
+      "id": 2,
+      "latitude": 0,
+      "longitude": 0,
+      "title": "Bomberos",
+      "image": "https://cdn-icons-png.flaticon.com/512/921/921079.png",
+    },
+    {
+      "id": 3,
+      "latitude": 0,
+      "longitude": 0,
+      "title": "Hospital",
+      "image":
+          "https://www.shareicon.net/data/512x512/2016/07/10/119238_hospital_512x512.png",
+    },
+  ];
+
   Set<Marker> myMarkers = {
     Marker(
       markerId: MarkerId("mandarina1"),
