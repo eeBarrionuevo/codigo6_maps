@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,10 +51,23 @@ class _HomePageState extends State<HomePage> {
     ),
   };
 
+  Set<Polyline> myPolylines = {
+    Polyline(
+      polylineId: PolylineId("ruta1"),
+      color: Colors.amber,
+      points: [
+        LatLng(-16.395905, -71.539823),
+        LatLng(-16.396667, -71.538042),
+        LatLng(-16.397727, -71.538353),
+      ],
+    ),
+  };
+
   @override
   void initState() {
     super.initState();
     getData();
+    getCurrentPosition();
   }
 
   getData() {
@@ -67,6 +81,13 @@ class _HomePageState extends State<HomePage> {
         myMarkers.add(marker);
         setState(() {});
       });
+    });
+  }
+
+  getCurrentPosition() async {
+    // Position position = await Geolocator.getCurrentPosition();
+    Geolocator.getPositionStream().listen((event) {
+      print(event);
     });
   }
 
@@ -108,7 +129,7 @@ class _HomePageState extends State<HomePage> {
         zoomControlsEnabled: true,
         zoomGesturesEnabled: true,
         markers: myMarkers,
-        // polylines: ,
+        polylines: myPolylines,
         // polygons: ,
         onTap: (LatLng position) async {
           Marker marker = Marker(
