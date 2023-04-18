@@ -41,21 +41,13 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
-  Set<Marker> myMarkers = {
-    Marker(
-      markerId: MarkerId("mandarina1"),
-      position: LatLng(-16.403337, -71.551929),
-    ),
-    Marker(
-      markerId: MarkerId("mandarina2"),
-      position: LatLng(-16.404640, -71.552101),
-    ),
-  };
-
+  Set<Marker> myMarkers = {};
   Set<Polyline> myPolylines = {};
   List<LatLng> _points = [];
 
   StreamSubscription<Position>? positionStreamSubscription;
+
+  late GoogleMapController googleMapController;
 
   @override
   void initState() {
@@ -118,6 +110,8 @@ class _HomePageState extends State<HomePage> {
         rotation: rotation,
       );
       myMarkers.add(indicator);
+      // CameraUpdate cameraUpdate = CameraUpdate.newLatLng(point);
+      // googleMapController.animateCamera(cameraUpdate);
       positionTemp = event;
       setState(() {});
     });
@@ -156,6 +150,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          CameraUpdate cameraUpdate =
+              CameraUpdate.newLatLng(await getCurrentPositionInitial());
+          googleMapController.animateCamera(cameraUpdate);
+        },
+        child: const Icon(
+          Icons.location_on,
+        ),
+      ),
       body: FutureBuilder(
         future: getCurrentPositionInitial(),
         builder: (BuildContext context, AsyncSnapshot snap) {
@@ -170,7 +174,8 @@ class _HomePageState extends State<HomePage> {
               myLocationButtonEnabled: true,
               mapType: MapType.normal,
               onMapCreated: (GoogleMapController controller) {
-                controller.setMapStyle(json.encode(mapStyle));
+                googleMapController = controller;
+                googleMapController.setMapStyle(json.encode(mapStyle));
               },
               zoomControlsEnabled: true,
               zoomGesturesEnabled: true,
@@ -205,7 +210,7 @@ class _HomePageState extends State<HomePage> {
               },
             );
           }
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },
