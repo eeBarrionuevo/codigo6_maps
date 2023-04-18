@@ -94,15 +94,31 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
+    Position? positionTemp;
+
     positionStreamSubscription = Geolocator.getPositionStream().listen((event) {
       LatLng point = LatLng(event.latitude, event.longitude);
       _points.add(point);
+
+      double rotation = 0;
+
+      if (positionTemp != null) {
+        rotation = Geolocator.bearingBetween(
+          positionTemp!.latitude,
+          positionTemp!.longitude,
+          event.latitude,
+          event.longitude,
+        );
+      }
+
       Marker indicator = Marker(
         markerId: MarkerId("IndicatorPosition"),
         position: point,
         icon: myIcon,
+        rotation: rotation,
       );
       myMarkers.add(indicator);
+      positionTemp = event;
       setState(() {});
     });
   }
