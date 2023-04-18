@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -63,6 +64,8 @@ class _HomePageState extends State<HomePage> {
     ),
   };
 
+  StreamSubscription<Position>? positionStreamSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -85,10 +88,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   getCurrentPosition() async {
-    // Position position = await Geolocator.getCurrentPosition();
-    Geolocator.getPositionStream().listen((event) {
+    positionStreamSubscription = Geolocator.getPositionStream().listen((event) {
       print(event);
     });
+    // Position position = await Geolocator.getCurrentPosition();
+    // Geolocator.getPositionStream().listen((event) {
+    //   print(event);
+    // });
   }
 
   Future<Uint8List> getImageMarkerBytes(String path,
@@ -109,6 +115,12 @@ class _HomePageState extends State<HomePage> {
     Uint8List myBytes = myByteData!.buffer.asUint8List();
 
     return myBytes;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    positionStreamSubscription!.cancel();
   }
 
   @override
