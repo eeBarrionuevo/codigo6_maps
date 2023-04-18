@@ -108,6 +108,8 @@ class _HomePageState extends State<HomePage> {
         zoomControlsEnabled: true,
         zoomGesturesEnabled: true,
         markers: myMarkers,
+        // polylines: ,
+        // polygons: ,
         onTap: (LatLng position) async {
           Marker marker = Marker(
             markerId: MarkerId(myMarkers.length.toString()),
