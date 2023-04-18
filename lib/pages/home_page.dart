@@ -142,6 +142,11 @@ class _HomePageState extends State<HomePage> {
     return myBytes;
   }
 
+  Future<LatLng> getCurrentPositionInitial() async {
+    Position position = await Geolocator.getCurrentPosition();
+    return LatLng(position.latitude, position.longitude);
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -151,48 +156,58 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(-16.403472, -71.552446),
-          zoom: 16,
-        ),
-        compassEnabled: true,
-        myLocationEnabled: false,
-        myLocationButtonEnabled: true,
-        mapType: MapType.normal,
-        onMapCreated: (GoogleMapController controller) {
-          controller.setMapStyle(json.encode(mapStyle));
-        },
-        zoomControlsEnabled: true,
-        zoomGesturesEnabled: true,
-        markers: myMarkers,
-        polylines: myPolylines,
-        // polygons: ,
-        onTap: (LatLng position) async {
-          Marker marker = Marker(
-            markerId: MarkerId(myMarkers.length.toString()),
-            position: position,
-            // icon: BitmapDescriptor.defaultMarkerWithHue(
-            //     BitmapDescriptor.hueOrange),
-            // icon: await BitmapDescriptor.fromAssetImage(
-            //   ImageConfiguration(),
-            //   "assets/images/location.png",
-            // ),
-            icon: BitmapDescriptor.fromBytes(
-              await getImageMarkerBytes(
-                "https://cdn-icons-png.flaticon.com/512/1673/1673219.png",
-                fromInternet: true,
-                width: 140,
+      body: FutureBuilder(
+        future: getCurrentPositionInitial(),
+        builder: (BuildContext context, AsyncSnapshot snap) {
+          if (snap.hasData) {
+            return GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: snap.data,
+                zoom: 16,
               ),
-            ),
-            rotation: 0,
-            draggable: true,
-            onDrag: (LatLng newPosition) {
-              print(newPosition);
-            },
+              compassEnabled: true,
+              myLocationEnabled: false,
+              myLocationButtonEnabled: true,
+              mapType: MapType.normal,
+              onMapCreated: (GoogleMapController controller) {
+                controller.setMapStyle(json.encode(mapStyle));
+              },
+              zoomControlsEnabled: true,
+              zoomGesturesEnabled: true,
+              markers: myMarkers,
+              polylines: myPolylines,
+              // polygons: ,
+              onTap: (LatLng position) async {
+                Marker marker = Marker(
+                  markerId: MarkerId(myMarkers.length.toString()),
+                  position: position,
+                  // icon: BitmapDescriptor.defaultMarkerWithHue(
+                  //     BitmapDescriptor.hueOrange),
+                  // icon: await BitmapDescriptor.fromAssetImage(
+                  //   ImageConfiguration(),
+                  //   "assets/images/location.png",
+                  // ),
+                  icon: BitmapDescriptor.fromBytes(
+                    await getImageMarkerBytes(
+                      "https://cdn-icons-png.flaticon.com/512/1673/1673219.png",
+                      fromInternet: true,
+                      width: 140,
+                    ),
+                  ),
+                  rotation: 0,
+                  draggable: true,
+                  onDrag: (LatLng newPosition) {
+                    print(newPosition);
+                  },
+                );
+                myMarkers.add(marker);
+                setState(() {});
+              },
+            );
+          }
+          return Center(
+            child: CircularProgressIndicator(),
           );
-          myMarkers.add(marker);
-          setState(() {});
         },
       ),
     );
