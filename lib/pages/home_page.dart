@@ -52,17 +52,8 @@ class _HomePageState extends State<HomePage> {
     ),
   };
 
-  Set<Polyline> myPolylines = {
-    Polyline(
-      polylineId: PolylineId("ruta1"),
-      color: Colors.amber,
-      points: [
-        LatLng(-16.395905, -71.539823),
-        LatLng(-16.396667, -71.538042),
-        LatLng(-16.397727, -71.538353),
-      ],
-    ),
-  };
+  Set<Polyline> myPolylines = {};
+  List<LatLng> _points = [];
 
   StreamSubscription<Position>? positionStreamSubscription;
 
@@ -88,13 +79,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   getCurrentPosition() async {
+    Polyline route1 = Polyline(
+      polylineId: const PolylineId("route1"),
+      color: Colors.deepPurple,
+      width: 3,
+      points: _points,
+    );
+    myPolylines.add(route1);
+
+    BitmapDescriptor myIcon = BitmapDescriptor.fromBytes(
+      await getImageMarkerBytes(
+        "https://freesvg.org/img/car_topview.png",
+        fromInternet: true,
+      ),
+    );
+
     positionStreamSubscription = Geolocator.getPositionStream().listen((event) {
-      print(event);
+      LatLng point = LatLng(event.latitude, event.longitude);
+      _points.add(point);
+      Marker indicator = Marker(
+        markerId: MarkerId("IndicatorPosition"),
+        position: point,
+        icon: myIcon,
+      );
+      myMarkers.add(indicator);
+      setState(() {});
     });
-    // Position position = await Geolocator.getCurrentPosition();
-    // Geolocator.getPositionStream().listen((event) {
-    //   print(event);
-    // });
   }
 
   Future<Uint8List> getImageMarkerBytes(String path,
@@ -107,7 +117,6 @@ class _HomePageState extends State<HomePage> {
       ByteData byteData = await rootBundle.load(path);
       bytes = byteData.buffer.asUint8List();
     }
-
     final codec = await ui.instantiateImageCodec(bytes, targetWidth: width);
     ui.FrameInfo frame = await codec.getNextFrame();
     ByteData? myByteData =
@@ -132,7 +141,7 @@ class _HomePageState extends State<HomePage> {
           zoom: 16,
         ),
         compassEnabled: true,
-        myLocationEnabled: true,
+        myLocationEnabled: false,
         myLocationButtonEnabled: true,
         mapType: MapType.normal,
         onMapCreated: (GoogleMapController controller) {
